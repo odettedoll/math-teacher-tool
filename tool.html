@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>도구 제작 - VI-ZONE</title>
+  <link rel="stylesheet" href="css/styles.css?v=3.2">
+  <link rel="stylesheet" href="css/lesson.css?v=3.3">
+  <link rel="stylesheet" href="css/tool.css?v=4.0">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app-container">
+    <!-- 사이드바 -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
+      </div>
+      
+      <nav class="sidebar-menu">
+        <a href="home.html" class="menu-item">
+          <span class="menu-item-icon">🏠</span>
+          <span class="menu-item-text">홈</span>
+        </a>
+        <a href="lesson.html" class="menu-item">
+          <span class="menu-item-icon">📚</span>
+          <span class="menu-item-text">수업 자료 생성</span>
+        </a>
+        <a href="question.html" class="menu-item">
+          <span class="menu-item-icon">✏️</span>
+          <span class="menu-item-text">문항 생성/변형</span>
+        </a>
+        <a href="tool.html" class="menu-item active">
+          <span class="menu-item-icon">
+            <img src="https://www.genspark.ai/api/files/s/gjx2ILJc" alt="도구 제작" style="width: 24px; height: 24px;">
+          </span>
+          <span class="menu-item-text">도구 제작</span>
+        </a>
+      </nav>
+      
+      <div class="sidebar-footer">
+        <div class="teacher-profile">
+          <div class="teacher-avatar">
+            <img src="https://www.genspark.ai/api/files/s/wfAbSpUF" alt="김지은 선생님">
+          </div>
+          <div class="teacher-info">
+            <div class="teacher-name">김지은 선생님</div>
+            <div class="teacher-role">수학 교사</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- 메인 컨텐츠 -->
+    <main class="main-content">
+      <div class="lesson-container">
+        <!-- 좌측: AI 채팅 영역 -->
+        <div class="chat-section" id="chatSection">
+          <!-- 업로드한 첨부 파일 드롭다운 -->
+          <div class="uploaded-files-dropdown" id="uploadedFilesDropdown" style="display: none;">
+            <div class="dropdown-header" onclick="toggleUploadedFiles()">
+              <div class="dropdown-title-wrapper">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path>
+                </svg>
+                <span class="dropdown-title">업로드한 첨부 파일 (<span id="uploadedFileCount">0</span>)</span>
+              </div>
+              <svg class="dropdown-arrow" id="dropdownArrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </div>
+            <div class="dropdown-content" id="uploadedFilesList" style="display: none;">
+              <!-- 업로드된 파일 리스트가 여기에 표시됩니다 -->
+            </div>
+          </div>
+          
+          <div class="chat-messages" id="chatMessages">
+            <!-- 템플릿 선택 또는 모달 닫기 시 AI 메시지가 여기에 추가됩니다 -->
+          </div>
+          
+          <!-- 사용 팁 영역 -->
+          <div class="usage-tips" id="usageTips">
+            <div class="tips-header">
+              <span class="tips-icon">💡</span>
+              <span class="tips-title">사용 팁</span>
+              <button class="tips-close-btn" onclick="closeUsageTips()" title="닫기">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </button>
+            </div>
+            <div class="tips-content">
+              <div class="tips-row">
+                <div class="tip-card">
+                  <div class="tip-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <path d="M12 6v6l4 2"></path>
+                    </svg>
+                  </div>
+                  <div class="tip-content">
+                    <h4 class="tip-title">구체적으로 요청</h4>
+                    <p class="tip-desc">"중학교 2학년 일차함수 수업안, 활동 중심, 50분"</p>
+                  </div>
+                </div>
+                <div class="tip-card">
+                  <div class="tip-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M6 20h4v-6h4v-6h4V2"></path>
+                      <line x1="6" y1="20" x2="18" y2="20"></line>
+                      <line x1="10" y1="14" x2="18" y2="14"></line>
+                      <line x1="14" y1="8" x2="18" y2="8"></line>
+                    </svg>
+                  </div>
+                  <div class="tip-content">
+                    <h4 class="tip-title">단계별 진행</h4>
+                    <p class="tip-desc">큰 틀 먼저, 세부 내용은 차근차근 수정</p>
+                  </div>
+                </div>
+              </div>
+              <div class="tips-row">
+                <div class="tip-card">
+                  <div class="tip-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path>
+                    </svg>
+                  </div>
+                  <div class="tip-content">
+                    <h4 class="tip-title">파일 업로드</h4>
+                    <p class="tip-desc">기존 자료를 업로드하여 소스로 사용</p>
+                  </div>
+                </div>
+                <div class="tip-card">
+                  <div class="tip-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                      <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                      <polyline points="7 3 7 8 15 8"></polyline>
+                    </svg>
+                  </div>
+                  <div class="tip-content">
+                    <h4 class="tip-title">자동 저장과 간편한 공유</h4>
+                    <p class="tip-desc">수정과 동시에 자동 저장<br>다양한 내보내기 포맷 및 공유 링크 지원</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="chat-input-area">
+            <!-- 첨부 파일 리스트 영역 -->
+            <div class="attached-files-area" id="attachedFilesArea" style="display: none;">
+              <div class="attached-files-header">
+                <div class="attached-files-title-wrapper" onclick="toggleAttachedFiles()">
+                  <span class="attached-files-title">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: text-bottom; margin-right: 4px;">
+                      <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path>
+                    </svg>
+                    첨부된 파일 (<span id="fileCount">0</span>)
+                  </span>
+                  <span class="toggle-icon" id="toggleIcon">▼</span>
+                </div>
+                <button class="clear-files-btn" onclick="clearAllFiles()">모두 삭제</button>
+              </div>
+              <div class="attached-files-list" id="attachedFilesList">
+                <!-- 첨부된 파일들이 여기에 표시됩니다 -->
+              </div>
+            </div>
+            
+            <div class="input-wrapper">
+              <button class="attach-button" onclick="triggerFileUpload()" title="파일 첨부">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path>
+                </svg>
+              </button>
+              <input 
+                type="file" 
+                id="fileInput" 
+                style="display: none;" 
+                multiple 
+                accept=".pdf,.ppt,.pptx,.doc,.docx,.hwp,.jpg,.jpeg,.png,.gif"
+                onchange="handleFileSelect(event)"
+              >
+              <input 
+                type="text" 
+                id="chatInput" 
+                class="chat-input" 
+                placeholder="만들고 싶은 도구를 설명해주세요"
+                onkeypress="handleKeyPress(event)"
+              >
+              <button class="send-button" onclick="sendMessage()">
+                <span>전송</span>
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 크기 조절 바 -->
+        <div class="resizer" id="resizer">
+          <div class="resizer-handle">
+            <div class="resizer-line"></div>
+            <div class="resizer-icon">⋮</div>
+            <div class="resizer-line"></div>
+          </div>
+        </div>
+        
+        <!-- 우측: 자료 미리보기 영역 -->
+        <div class="preview-section" id="previewSection">
+          <!-- 템플릿 선택 바 -->
+          <div class="template-selection-bar">
+            <div class="template-bar-title">도구 템플릿</div>
+            <div class="template-icons-list">
+              <button class="template-icon-btn" onclick="selectTemplateFromBar('video')" title="영상 생성">
+                <span class="template-icon-emoji">🎬</span>
+              </button>
+              <button class="template-icon-btn" onclick="selectTemplateFromBar('audio')" title="음성 생성">
+                <span class="template-icon-emoji">🎤</span>
+              </button>
+              <button class="template-icon-btn" onclick="selectTemplateFromBar('image')" title="이미지 생성">
+                <span class="template-icon-emoji">🖼️</span>
+              </button>
+              <button class="template-icon-btn" onclick="selectTemplateFromBar('webtemplate')" title="웹툰 제작">
+                <span class="template-icon-emoji">🗺️</span>
+              </button>
+              <button class="template-icon-btn" onclick="selectTemplateFromBar('storybook')" title="스토리북">
+                <span class="template-icon-emoji">📚</span>
+              </button>
+              <button class="template-icon-btn" onclick="selectTemplateFromBar('chatbot')" title="챗봇 생성">
+                <span class="template-icon-emoji">🤖</span>
+              </button>
+              <button class="template-icon-btn" onclick="selectTemplateFromBar('summary')" title="내용 요약">
+                <span class="template-icon-emoji">📝</span>
+              </button>
+              <button class="template-icon-btn" onclick="selectTemplateFromBar('game')" title="학습 게임">
+                <span class="template-icon-emoji">🎮</span>
+              </button>
+              <button class="template-icon-btn" onclick="selectTemplateFromBar('engineering')" title="공학도구">
+                <span class="template-icon-emoji">⚙️</span>
+              </button>
+              <button class="template-icon-btn" onclick="selectTemplateFromBar('math')" title="수학도구">
+                <span class="template-icon-emoji">📐</span>
+              </button>
+            </div>
+          </div>
+          
+          <div class="preview-header">
+            <div class="preview-title-area">
+              <h2 class="preview-title" id="previewMainTitle">📄 미리보기</h2>
+              <div class="preview-info-row">
+                <span class="preview-meta" id="previewMeta"></span>
+                <span class="auto-save-status" id="autoSaveStatus">
+                  <svg class="save-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                  <span id="saveTimeText">자동 저장됨</span>
+                </span>
+              </div>
+            </div>
+            <div class="preview-actions">
+              <div class="mode-toggle-switch" id="modeToggleBtn" onclick="toggleEditMode()" title="편집/읽기 모드 전환">
+                <div class="toggle-option" id="readOption">읽기</div>
+                <div class="toggle-option active" id="editOption">편집</div>
+                <div class="toggle-slider" id="toggleSlider"></div>
+              </div>
+              <button class="preview-btn marker-btn" id="markerBtn" title="Position Marker">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                  <circle cx="12" cy="10" r="3"></circle>
+                </svg>
+                위치 지정
+              </button>
+              <button class="preview-btn" onclick="downloadPreview()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="7 10 12 15 17 10"></polyline>
+                  <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+                다운로드
+              </button>
+              <button class="preview-btn primary" onclick="sharePreview()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="18" cy="5" r="3"></circle>
+                  <circle cx="6" cy="12" r="3"></circle>
+                  <circle cx="18" cy="19" r="3"></circle>
+                  <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                  <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                </svg>
+                공유하기
+              </button>
+            </div>
+          </div>
+          
+          <div class="preview-content" id="previewContent">
+            <div class="preview-empty">
+              <div class="preview-empty-icon">📋</div>
+              <p class="preview-empty-text">생성된 자료가 여기에 표시됩니다</p>
+              <p class="preview-empty-description">AI와 대화를 시작해보세요!</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- 템플릿 선택 팝업 -->
+  <div class="template-modal" id="templateModal">
+    <div class="template-modal-overlay"></div>
+    <div class="template-modal-content">
+      <button class="template-modal-close" onclick="closeTemplateModal()" title="닫기">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+      <div class="template-modal-header">
+        <h2 class="template-modal-title">만들고 싶은 도구를 선택해 주세요!</h2>
+        <p class="template-subtitle">(추후 변경이 가능합니다.)</p>
+      </div>
+      
+      <div class="template-modal-body">
+        <!-- AI 콘텐츠 생성 섹션 -->
+        <div class="template-section">
+          <h3 class="template-section-title">AI 콘텐츠 생성</h3>
+          <div class="template-grid">
+            <button class="template-card" onclick="selectTemplate('video')">
+              <div class="template-icon" style="background: linear-gradient(135deg, #FF3B30 0%, #FF6B6B 100%);">
+                <span class="template-emoji">🎬</span>
+              </div>
+              <span class="template-name">영상 생성</span>
+            </button>
+            
+            <button class="template-card" onclick="selectTemplate('audio')">
+              <div class="template-icon" style="background: linear-gradient(135deg, #8E2DE2 0%, #A855F7 100%);">
+                <span class="template-emoji">🎤</span>
+              </div>
+              <span class="template-name">음성 생성</span>
+            </button>
+            
+            <button class="template-card" onclick="selectTemplate('image')">
+              <div class="template-icon" style="background: linear-gradient(135deg, #00C9FF 0%, #92FE9D 100%);">
+                <span class="template-emoji">🖼️</span>
+              </div>
+              <span class="template-name">이미지 생성</span>
+            </button>
+            
+            <button class="template-card" onclick="selectTemplate('webtemplate')">
+              <div class="template-icon" style="background: linear-gradient(135deg, #FFA751 0%, #FFE259 100%);">
+                <span class="template-emoji">🗺️</span>
+              </div>
+              <span class="template-name">웹툰 제작</span>
+            </button>
+            
+            <button class="template-card" onclick="selectTemplate('storybook')">
+              <div class="template-icon" style="background: linear-gradient(135deg, #FF6B9D 0%, #FFC371 100%);">
+                <span class="template-emoji">📚</span>
+              </div>
+              <span class="template-name">스토리북</span>
+            </button>
+            
+            <button class="template-card" onclick="selectTemplate('chatbot')">
+              <div class="template-icon" style="background: linear-gradient(135deg, #4A90E2 0%, #50C9F2 100%);">
+                <span class="template-emoji">🤖</span>
+              </div>
+              <span class="template-name">챗봇 생성</span>
+            </button>
+            
+            <button class="template-card" onclick="selectTemplate('summary')">
+              <div class="template-icon" style="background: linear-gradient(135deg, #FFA726 0%, #FFB74D 100%);">
+                <span class="template-emoji">📝</span>
+              </div>
+              <span class="template-name">내용 요약</span>
+            </button>
+            
+            <button class="template-card" onclick="selectTemplate('game')">
+              <div class="template-icon" style="background: linear-gradient(135deg, #667EEA 0%, #764BA2 100%);">
+                <span class="template-emoji">🎮</span>
+              </div>
+              <span class="template-name">학습 게임</span>
+            </button>
+          </div>
+        </div>
+        
+        <!-- 수학 특화 도구 생성 섹션 -->
+        <div class="template-section">
+          <h3 class="template-section-title">수학 특화 도구 생성</h3>
+          <div class="template-grid template-grid-2">
+            <button class="template-card" onclick="selectTemplate('engineering')">
+              <div class="template-icon" style="background: linear-gradient(135deg, #667EEA 0%, #764BA2 100%);">
+                <span class="template-emoji">⚙️</span>
+              </div>
+              <span class="template-name">공학도구</span>
+            </button>
+            
+            <button class="template-card" onclick="selectTemplate('math')">
+              <div class="template-icon" style="background: linear-gradient(135deg, #F093FB 0%, #F5576C 100%);">
+                <span class="template-emoji">📐</span>
+              </div>
+              <span class="template-name">수학도구</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 다운로드 모달 -->
+  <div class="download-modal" id="downloadModal">
+    <div class="download-modal-overlay" onclick="closeDownloadModal()"></div>
+    <div class="download-modal-content">
+      <div class="download-modal-header">
+        <h3 class="download-modal-title">📥 자료 다운로드</h3>
+        <button class="download-modal-close" onclick="closeDownloadModal()">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      
+      <div class="download-modal-body">
+        <p class="download-instruction">원하시는 파일 형식을 선택해주세요</p>
+        
+        <div class="format-buttons">
+          <button class="format-btn active" data-format="ppt" onclick="selectDownloadFormat(this, 'ppt')">
+            <div class="format-icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <path d="M9 15v-4h2a2 2 0 1 1 0 4h-2"></path>
+              </svg>
+            </div>
+            <span class="format-name">PPT</span>
+            <span class="format-desc">파워포인트</span>
+          </button>
+          
+          <button class="format-btn" data-format="pdf" onclick="selectDownloadFormat(this, 'pdf')">
+            <div class="format-icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <path d="M9 13h2a1 1 0 0 1 0 2H9v-2z"></path>
+              </svg>
+            </div>
+            <span class="format-name">PDF</span>
+            <span class="format-desc">PDF 문서</span>
+          </button>
+          
+          <button class="format-btn" data-format="hwp" onclick="selectDownloadFormat(this, 'hwp')">
+            <div class="format-icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <path d="M8 13h3m-3 3h3m2-3h3m-3 3h3"></path>
+              </svg>
+            </div>
+            <span class="format-name">HWP</span>
+            <span class="format-desc">한글 문서</span>
+          </button>
+          
+          <button class="format-btn" data-format="html" onclick="selectDownloadFormat(this, 'html')">
+            <div class="format-icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <polyline points="16 18 22 12 16 6"></polyline>
+                <polyline points="8 6 2 12 8 18"></polyline>
+              </svg>
+            </div>
+            <span class="format-name">HTML</span>
+            <span class="format-desc">웹 문서</span>
+          </button>
+        </div>
+      </div>
+      
+      <div class="download-modal-footer">
+        <button class="download-action-btn secondary" onclick="printPreview()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="6 9 6 2 18 2 18 9"></polyline>
+            <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+            <rect x="6" y="14" width="12" height="8"></rect>
+          </svg>
+          바로 인쇄하기
+        </button>
+        <button class="download-action-btn primary" onclick="confirmDownload()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          다운로드
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 공유하기 모달 -->
+  <div class="share-modal" id="shareModal">
+    <div class="share-modal-overlay" onclick="closeShareModal()"></div>
+    <div class="share-modal-content">
+      <div class="share-modal-header">
+        <h3 class="share-modal-title">🔗 자료 공유하기</h3>
+        <button class="share-modal-close" onclick="closeShareModal()">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      
+      <div class="share-modal-body">
+        <p class="share-instruction">공유 방식을 선택해주세요</p>
+        
+        <div class="share-method-buttons">
+          <button class="share-method-btn active" data-method="link" onclick="selectShareMethod(this, 'link')">
+            <div class="share-method-icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+              </svg>
+            </div>
+            <span class="share-method-name">링크 복사하기</span>
+            <span class="share-method-desc">URL 링크로 공유</span>
+          </button>
+          
+          <button class="share-method-btn" data-method="qr" onclick="selectShareMethod(this, 'qr')">
+            <div class="share-method-icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <rect x="3" y="3" width="7" height="7"></rect>
+                <rect x="14" y="3" width="7" height="7"></rect>
+                <rect x="3" y="14" width="7" height="7"></rect>
+                <rect x="14" y="14" width="7" height="7"></rect>
+                <rect x="5" y="5" width="3" height="3" fill="currentColor"></rect>
+                <rect x="16" y="5" width="3" height="3" fill="currentColor"></rect>
+                <rect x="5" y="16" width="3" height="3" fill="currentColor"></rect>
+                <rect x="16" y="16" width="3" height="3" fill="currentColor"></rect>
+              </svg>
+            </div>
+            <span class="share-method-name">QR 생성하기</span>
+            <span class="share-method-desc">QR 코드로 공유</span>
+          </button>
+        </div>
+        
+        <!-- 링크 복사 영역 -->
+        <div class="share-result-area" id="linkShareArea" style="display: block;">
+          <label class="share-result-label">공유 링크</label>
+          <div class="share-link-container">
+            <input type="text" class="share-link-input" id="shareLinkInput" value="https://vi-zone.app/share/abc123xyz" readonly>
+            <button class="copy-link-btn" onclick="copyShareLink()">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+              복사
+            </button>
+          </div>
+          <p class="share-help-text">📋 링크를 복사하여 다른 사람과 공유하세요</p>
+        </div>
+        
+        <!-- QR 코드 영역 -->
+        <div class="share-result-area" id="qrShareArea" style="display: none;">
+          <label class="share-result-label">QR 코드</label>
+          <div class="qr-code-container">
+            <div class="qr-code-box" id="qrCodeBox">
+              <!-- QR 코드 이미지가 여기에 표시됩니다 -->
+              <svg width="200" height="200" viewBox="0 0 200 200" fill="none">
+                <rect width="200" height="200" fill="white"/>
+                <!-- QR 패턴 시뮬레이션 -->
+                <g fill="#000000">
+                  <!-- 좌상단 마커 -->
+                  <rect x="10" y="10" width="60" height="60"/>
+                  <rect x="20" y="20" width="40" height="40" fill="white"/>
+                  <rect x="30" y="30" width="20" height="20" fill="#000000"/>
+                  
+                  <!-- 우상단 마커 -->
+                  <rect x="130" y="10" width="60" height="60"/>
+                  <rect x="140" y="20" width="40" height="40" fill="white"/>
+                  <rect x="150" y="30" width="20" height="20" fill="#000000"/>
+                  
+                  <!-- 좌하단 마커 -->
+                  <rect x="10" y="130" width="60" height="60"/>
+                  <rect x="20" y="140" width="40" height="40" fill="white"/>
+                  <rect x="30" y="150" width="20" height="20" fill="#000000"/>
+                  
+                  <!-- 데이터 패턴 (샘플) -->
+                  <rect x="90" y="20" width="10" height="10"/>
+                  <rect x="110" y="20" width="10" height="10"/>
+                  <rect x="90" y="40" width="10" height="10"/>
+                  <rect x="110" y="40" width="10" height="10"/>
+                  <rect x="90" y="60" width="10" height="10"/>
+                  
+                  <rect x="20" y="90" width="10" height="10"/>
+                  <rect x="40" y="90" width="10" height="10"/>
+                  <rect x="60" y="90" width="10" height="10"/>
+                  <rect x="90" y="90" width="10" height="10"/>
+                  <rect x="110" y="90" width="10" height="10"/>
+                  <rect x="130" y="90" width="10" height="10"/>
+                  <rect x="150" y="90" width="10" height="10"/>
+                  <rect x="170" y="90" width="10" height="10"/>
+                  
+                  <rect x="90" y="110" width="10" height="10"/>
+                  <rect x="110" y="110" width="10" height="10"/>
+                  <rect x="130" y="110" width="10" height="10"/>
+                  <rect x="150" y="110" width="10" height="10"/>
+                  <rect x="170" y="110" width="10" height="10"/>
+                  
+                  <rect x="90" y="130" width="10" height="10"/>
+                  <rect x="110" y="130" width="10" height="10"/>
+                  <rect x="130" y="130" width="10" height="10"/>
+                  <rect x="150" y="130" width="10" height="10"/>
+                  <rect x="170" y="130" width="10" height="10"/>
+                  
+                  <rect x="90" y="150" width="10" height="10"/>
+                  <rect x="110" y="150" width="10" height="10"/>
+                  <rect x="150" y="150" width="10" height="10"/>
+                  <rect x="170" y="150" width="10" height="10"/>
+                  
+                  <rect x="90" y="170" width="10" height="10"/>
+                  <rect x="130" y="170" width="10" height="10"/>
+                  <rect x="150" y="170" width="10" height="10"/>
+                </g>
+              </svg>
+            </div>
+          </div>
+          <div class="qr-action-buttons">
+            <button class="qr-action-btn secondary" onclick="copyQRCode()">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+              이미지 복사
+            </button>
+            <button class="qr-action-btn primary" onclick="downloadQRCode()">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="7 10 12 15 17 10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+              </svg>
+              QR 다운로드
+            </button>
+          </div>
+          <p class="share-help-text">📱 QR 코드를 스캔하여 자료에 접근하세요</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/script.js"></script>
+  <script src="js/lesson.js?v=3.3"></script>
+  <script src="js/tool.js?v=8.1"></script>
+</body>
+</html>

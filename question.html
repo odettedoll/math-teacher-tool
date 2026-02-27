@@ -1,0 +1,1122 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>문항 생성/변형 - VI-ZONE</title>
+  <link rel="stylesheet" href="css/styles.css?v=3.2">
+  <link rel="stylesheet" href="css/question.css?v=2.18">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app-container">
+    <!-- 사이드바 -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
+      </div>
+      
+      <nav class="sidebar-menu">
+        <a href="home.html" class="menu-item">
+          <span class="menu-item-icon">🏠</span>
+          <span class="menu-item-text">홈</span>
+        </a>
+        <a href="lesson.html" class="menu-item">
+          <span class="menu-item-icon">📚</span>
+          <span class="menu-item-text">수업 자료 생성</span>
+        </a>
+        <a href="question.html" class="menu-item active">
+          <span class="menu-item-icon">✏️</span>
+          <span class="menu-item-text">문항 생성/변형</span>
+        </a>
+        <a href="tool.html" class="menu-item">
+          <span class="menu-item-icon">
+            <img src="https://www.genspark.ai/api/files/s/gjx2ILJc" alt="도구 제작" style="width: 24px; height: 24px;">
+          </span>
+          <span class="menu-item-text">도구 제작</span>
+        </a>
+      </nav>
+      
+      <div class="sidebar-footer">
+        <div class="teacher-profile">
+          <div class="teacher-avatar">
+            <img src="https://www.genspark.ai/api/files/s/wfAbSpUF" alt="김지은 선생님">
+          </div>
+          <div class="teacher-info">
+            <div class="teacher-name">김지은 선생님</div>
+            <div class="teacher-role">수학 교사</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- 메인 컨텐츠 -->
+    <main class="main-content">
+      <div class="lesson-container">
+        <!-- 좌측: AI 채팅 영역 -->
+        <div class="chat-section" id="chatSection">
+          <!-- 업로드한 첨부 파일 드롭다운 -->
+          <div class="uploaded-files-dropdown" id="uploadedFilesDropdown" style="display: none;">
+            <div class="dropdown-header" onclick="toggleUploadedFiles()">
+              <div class="dropdown-title-wrapper">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path>
+                </svg>
+                <span class="dropdown-title">업로드한 첨부 파일 (<span id="uploadedFileCount">0</span>)</span>
+              </div>
+              <svg class="dropdown-arrow" id="dropdownArrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </div>
+            <div class="dropdown-content" id="uploadedFilesList" style="display: none;">
+              <!-- 업로드된 파일 리스트가 여기에 표시됩니다 -->
+            </div>
+          </div>
+          
+          <div class="chat-messages" id="chatMessages">
+            <!-- 초기 안내 메시지 -->
+            <div class="message ai-message">
+              <div class="message-avatar">
+                <img src="https://www.genspark.ai/api/files/s/YgU0f6Ii" alt="AI">
+              </div>
+              <div class="message-content">
+                <p>안녕하세요! 문항 생성 및 변형을 도와드리겠습니다.</p>
+                <p>어떤 유형의 문항을 만들고 싶으신가요?</p>
+                <div class="suggestion-chips">
+                  <button class="chip" onclick="startQuestionType('OCR 변환')">📷 OCR 변환</button>
+                  <button class="chip" onclick="startQuestionType('유사문제 생성')">🔄 유사문제 생성</button>
+                  <button class="chip" onclick="startQuestionType('단원 단위 평가')">📝 단원 단위 평가</button>
+                  <button class="chip" onclick="startQuestionType('오늘의 숙제')">📚 오늘의 숙제</button>
+                </div>
+                <p style="font-size: 13px; color: var(--text-secondary); margin-top: 12px; margin-bottom: 0;">💡 팁: 위 버튼으로 빠르게 선택하거나, 직접 입력하여 대화할 수 있습니다.</p>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 사용 팁 영역 -->
+          <div class="usage-tips hidden" id="usageTips" style="display: none;">
+            <div class="tips-header">
+              <span class="tips-icon">💡</span>
+              <span class="tips-title">사용 팁</span>
+              <button class="tips-close-btn" onclick="closeUsageTips()" title="닫기">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </button>
+            </div>
+            <div class="tips-content">
+              <div class="tips-row">
+                <div class="tip-card">
+                  <div class="tip-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <path d="M12 6v6l4 2"></path>
+                    </svg>
+                  </div>
+                  <div class="tip-content">
+                    <h4 class="tip-title">구체적으로 요청</h4>
+                    <p class="tip-desc">"중학교 2학년 일차함수 단원 선택형 문제 5개"</p>
+                  </div>
+                </div>
+                <div class="tip-card">
+                  <div class="tip-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M6 20h4v-6h4v-6h4V2"></path>
+                      <line x1="6" y1="20" x2="18" y2="20"></line>
+                      <line x1="10" y1="14" x2="18" y2="14"></line>
+                      <line x1="14" y1="8" x2="18" y2="8"></line>
+                    </svg>
+                  </div>
+                  <div class="tip-content">
+                    <h4 class="tip-title">단계별 진행</h4>
+                    <p class="tip-desc">큰 틀 먼저, 세부 내용은 차근차근 수정</p>
+                  </div>
+                </div>
+              </div>
+              <div class="tips-row">
+                <div class="tip-card">
+                  <div class="tip-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path>
+                    </svg>
+                  </div>
+                  <div class="tip-content">
+                    <h4 class="tip-title">파일 업로드</h4>
+                    <p class="tip-desc">기존 문항을 업로드하여 변형하기</p>
+                  </div>
+                </div>
+                <div class="tip-card">
+                  <div class="tip-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                      <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                      <polyline points="7 3 7 8 15 8"></polyline>
+                    </svg>
+                  </div>
+                  <div class="tip-content">
+                    <h4 class="tip-title">자동 저장과 간편한 공유</h4>
+                    <p class="tip-desc">수정과 동시에 자동 저장<br>다양한 내보내기 포맷 및 공유 링크 지원</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="chat-input-area">
+            <!-- 첨부 파일 리스트 영역 -->
+            <div class="attached-files-area" id="attachedFilesArea" style="display: none;">
+              <div class="attached-files-header">
+                <div class="attached-files-title-wrapper" onclick="toggleAttachedFiles()">
+                  <span class="attached-files-title">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: text-bottom; margin-right: 4px;">
+                      <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path>
+                    </svg>
+                    첨부된 파일 (<span id="fileCount">0</span>)
+                  </span>
+                  <span class="toggle-icon" id="toggleIcon">▼</span>
+                </div>
+                <button class="clear-files-btn" onclick="clearAllFiles()">모두 삭제</button>
+              </div>
+              <div class="attached-files-list" id="attachedFilesList">
+                <!-- 첨부된 파일들이 여기에 표시됩니다 -->
+              </div>
+            </div>
+            
+            <div class="input-wrapper">
+              <div class="attach-button-wrapper">
+                <button class="attach-button" onclick="toggleFileTypePopup()" title="파일 첨부">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path>
+                  </svg>
+                </button>
+                
+                <!-- 파일 유형 선택 팝업 -->
+                <div class="file-type-popup" id="fileTypePopup" style="display: none;">
+                  <div class="file-type-grid">
+                    <button class="file-type-btn" onclick="selectFileType('비상 DB에서 검색하기')">
+                      <span class="file-type-icon" style="width: 80px;">
+                        <img src="https://www.genspark.ai/api/files/s/IzOqJkeJ" alt="비상교육" style="width: 100%; height: 100%; object-fit: contain;">
+                      </span>
+                      <span class="file-type-label">비상 DB에서<br>검색하기</span>
+                    </button>
+                    <button class="file-type-btn" onclick="selectFileType('만든 자료에서 불러오기')">
+                      <span class="file-type-icon">📂</span>
+                      <span class="file-type-label">만든 자료에서<br>불러오기</span>
+                    </button>
+                    <button class="file-type-btn" onclick="selectFileType('성취기준 선택하기')">
+                      <span class="file-type-icon">📋</span>
+                      <span class="file-type-label">성취기준<br>선택하기</span>
+                    </button>
+                    <button class="file-type-btn" onclick="selectFileType('첨부파일 업로드')">
+                      <span class="file-type-icon">📎</span>
+                      <span class="file-type-label">첨부파일<br>업로드</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <input 
+                type="file" 
+                id="fileInput" 
+                style="display: none;" 
+                multiple 
+                accept=".pdf,.ppt,.pptx,.doc,.docx,.hwp,.jpg,.jpeg,.png,.gif"
+                onchange="handleFileSelect(event)"
+              >
+              <input 
+                type="text" 
+                id="chatInput" 
+                class="chat-input" 
+                placeholder="예: 중2 일차함수 단원 선택형 문제 5개를 만들어주세요"
+                onkeypress="handleKeyPress(event)"
+              >
+              <button class="send-button" onclick="sendMessage()">
+                <span>전송</span>
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 크기 조절 바 -->
+        <div class="resizer" id="resizer">
+          <div class="resizer-handle">
+            <div class="resizer-line"></div>
+            <div class="resizer-icon">⋮</div>
+            <div class="resizer-line"></div>
+          </div>
+        </div>
+        
+        <!-- 우측: 자료 미리보기 영역 -->
+        <div class="preview-section" id="previewSection">
+          <div class="preview-header">
+            <div class="preview-title-area">
+              <h2 class="preview-title" id="previewMainTitle">📄 미리보기</h2>
+              <div class="preview-info-row">
+                <span class="preview-meta" id="previewMeta"></span>
+                <span class="auto-save-status" id="autoSaveStatus">
+                  <svg class="save-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                  <span id="saveTimeText">자동 저장됨</span>
+                </span>
+              </div>
+            </div>
+            <div class="preview-actions">
+              <div class="mode-toggle-switch" id="modeToggleBtn" onclick="toggleEditMode()" title="편집/읽기 모드 전환">
+                <div class="toggle-option" id="readOption">읽기</div>
+                <div class="toggle-option active" id="editOption">편집</div>
+                <div class="toggle-slider" id="toggleSlider"></div>
+              </div>
+              <button class="preview-btn marker-btn" id="markerBtn" title="Position Marker">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                  <circle cx="12" cy="10" r="3"></circle>
+                </svg>
+                위치 지정
+              </button>
+              <button class="preview-btn" onclick="downloadPreview()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="7 10 12 15 17 10"></polyline>
+                  <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+                다운로드
+              </button>
+
+              <button class="preview-btn primary" onclick="sharePreview()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="18" cy="5" r="3"></circle>
+                  <circle cx="6" cy="12" r="3"></circle>
+                  <circle cx="18" cy="19" r="3"></circle>
+                  <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                  <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                </svg>
+                공유하기
+              </button>
+            </div>
+          </div>
+          
+          <div class="preview-content" id="previewContent">
+            <div class="preview-empty">
+              <div class="preview-empty-icon">📋</div>
+              <p class="preview-empty-text">생성된 문항이 여기에 표시됩니다</p>
+              <p class="preview-empty-description">AI와 대화를 시작해보세요!</p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 자료 정보 사이드바 -->
+        <div class="material-info-sidebar" id="materialInfoSidebar">
+          <div class="sidebar-header">
+            <h3 class="sidebar-title">생성된 자료 정보 확인</h3>
+          </div>
+          
+          <div class="sidebar-content">
+            <div class="info-section">
+              <div class="info-label">출제 범위</div>
+              <div class="info-value" id="sidebarScope">
+                수학 I(인조호) > 1. 수와 연산 > 1. 소인수분해 > 2. 최대공약수와 최소공배수
+              </div>
+            </div>
+            
+            <div class="info-section">
+              <div class="info-label">출처</div>
+              <div class="info-value" id="sidebarSource">
+                교사용(교사용 자료, 지도서 등)
+                학생용(평가문제집, 자습서 등)
+              </div>
+            </div>
+            
+            <div class="info-section">
+              <div class="info-label">난이도</div>
+              <div class="info-value">
+                <div class="difficulty-badges" id="sidebarDifficulty">
+                  <span class="diff-badge high">상 5개</span>
+                  <span class="diff-badge medium">중 10개</span>
+                  <span class="diff-badge low">하 5개</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="info-section">
+              <div class="info-label">문항 유형</div>
+              <div class="info-value" id="sidebarQuestionType">
+                객관식 5 개, 주관식 5 개
+              </div>
+            </div>
+            
+            <div class="info-section">
+              <div class="info-label">평가 영역</div>
+              <div class="info-value" id="sidebarEvaluation">
+                창의력 1 개, 추론력 1 개, 문제해결력 5 개, 이해력 2 개, 계산력 1 개
+              </div>
+            </div>
+          </div>
+          
+          <button class="sidebar-toggle-btn" onclick="toggleMaterialInfoSidebar()" title="자료 정보">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="16" x2="12" y2="12"></line>
+              <line x1="12" y1="8" x2="12.01" y2="8"></line>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- 다운로드 모달 -->
+  <div class="download-modal" id="downloadModal">
+    <div class="download-modal-overlay" onclick="closeDownloadModal()"></div>
+    <div class="download-modal-content">
+      <div class="download-modal-header">
+        <h3 class="download-modal-title">📥 자료 다운로드</h3>
+        <button class="download-modal-close" onclick="closeDownloadModal()">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      
+      <div class="download-modal-body">
+        <!-- 형식 선택 -->
+        <div class="download-section">
+          <h4 class="download-section-title">형식</h4>
+          <div class="format-buttons">
+            <button class="format-btn active" data-format="ppt" onclick="selectDownloadFormat(this, 'ppt')">
+              <div class="format-icon">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                  <polyline points="14 2 14 8 20 8"></polyline>
+                  <path d="M9 15v-4h2a2 2 0 1 1 0 4h-2"></path>
+                </svg>
+              </div>
+              <span class="format-name">PPT</span>
+              <span class="format-desc">파워포인트</span>
+            </button>
+            
+            <button class="format-btn" data-format="pdf" onclick="selectDownloadFormat(this, 'pdf')">
+              <div class="format-icon">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                  <polyline points="14 2 14 8 20 8"></polyline>
+                  <path d="M9 13h2a1 1 0 0 1 0 2H9v-2z"></path>
+                </svg>
+              </div>
+              <span class="format-name">PDF</span>
+              <span class="format-desc">PDF 문서</span>
+            </button>
+            
+            <button class="format-btn" data-format="hwp" onclick="selectDownloadFormat(this, 'hwp')">
+              <div class="format-icon">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                  <polyline points="14 2 14 8 20 8"></polyline>
+                  <path d="M8 13h3m-3 3h3m2-3h3m-3 3h3"></path>
+                </svg>
+              </div>
+              <span class="format-name">HWP</span>
+              <span class="format-desc">한글 문서</span>
+            </button>
+            
+            <button class="format-btn" data-format="docx" onclick="selectDownloadFormat(this, 'docx')">
+              <div class="format-icon">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                  <polyline points="14 2 14 8 20 8"></polyline>
+                </svg>
+              </div>
+              <span class="format-name">DOCX</span>
+              <span class="format-desc">워드 문서</span>
+            </button>
+          </div>
+        </div>
+        
+        <!-- 디자인 선택 -->
+        <div class="download-section">
+          <h4 class="download-section-title">디자인</h4>
+          <div class="design-buttons">
+            <button class="design-btn active" data-design="basic" onclick="selectDesign(this, 'basic')">
+              <div class="design-preview">📄</div>
+              <span class="design-name">기본</span>
+            </button>
+            <button class="design-btn" data-design="modern" onclick="selectDesign(this, 'modern')">
+              <div class="design-preview">✨</div>
+              <span class="design-name">모던</span>
+            </button>
+            <button class="design-btn" data-design="minimal" onclick="selectDesign(this, 'minimal')">
+              <div class="design-preview">⬜</div>
+              <span class="design-name">미니멀</span>
+            </button>
+            <button class="design-btn" data-design="colorful" onclick="selectDesign(this, 'colorful')">
+              <div class="design-preview">🎨</div>
+              <span class="design-name">컬러풀</span>
+            </button>
+          </div>
+        </div>
+        
+        <!-- 힌트/해설 옵션 -->
+        <div class="download-section">
+          <h4 class="download-section-title">힌트 / 해설</h4>
+          <div class="hint-solution-options">
+            <label class="option-checkbox">
+              <input type="checkbox" id="includeHint" checked>
+              <span class="checkbox-label">힌트 포함</span>
+            </label>
+            <label class="option-checkbox">
+              <input type="checkbox" id="includeSolution" checked>
+              <span class="checkbox-label">해설 포함</span>
+            </label>
+          </div>
+          
+          <div class="placement-options" id="placementOptions">
+            <h5 class="placement-title">배치 위치</h5>
+            <label class="option-radio">
+              <input type="radio" name="placement" value="with-question" checked>
+              <span class="radio-label">
+                <span class="radio-title">문항과 함께</span>
+                <span class="radio-desc">각 문항 바로 아래에 표시</span>
+              </span>
+            </label>
+            <label class="option-radio">
+              <input type="radio" name="placement" value="end">
+              <span class="radio-label">
+                <span class="radio-title">마지막 페이지에 일괄로</span>
+                <span class="radio-desc">모든 문항 뒤에 정답 및 해설 페이지 추가</span>
+              </span>
+            </label>
+          </div>
+        </div>
+      </div>
+      
+      <div class="download-modal-footer">
+        <button class="download-action-btn secondary" onclick="printPreview()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="6 9 6 2 18 2 18 9"></polyline>
+            <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+            <rect x="6" y="14" width="12" height="8"></rect>
+          </svg>
+          바로 인쇄하기
+        </button>
+        <button class="download-action-btn primary" onclick="confirmDownload()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          다운로드
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 공유하기 모달 -->
+  <div class="share-modal" id="shareModal">
+    <div class="share-modal-overlay" onclick="closeShareModal()"></div>
+    <div class="share-modal-content">
+      <div class="share-modal-header">
+        <h3 class="share-modal-title">🔗 자료 공유하기</h3>
+        <button class="share-modal-close" onclick="closeShareModal()">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      
+      <div class="share-modal-body">
+        <p class="share-instruction">공유 방식을 선택해주세요</p>
+        
+        <div class="share-method-buttons">
+          <button class="share-method-btn active" data-method="link" onclick="selectShareMethod(this, 'link')">
+            <div class="share-method-icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+              </svg>
+            </div>
+            <span class="share-method-name">링크 복사하기</span>
+            <span class="share-method-desc">URL 링크로 공유</span>
+          </button>
+          
+          <button class="share-method-btn" data-method="qr" onclick="selectShareMethod(this, 'qr')">
+            <div class="share-method-icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <rect x="3" y="3" width="7" height="7"></rect>
+                <rect x="14" y="3" width="7" height="7"></rect>
+                <rect x="3" y="14" width="7" height="7"></rect>
+                <rect x="14" y="14" width="7" height="7"></rect>
+                <rect x="5" y="5" width="3" height="3" fill="currentColor"></rect>
+                <rect x="16" y="5" width="3" height="3" fill="currentColor"></rect>
+                <rect x="5" y="16" width="3" height="3" fill="currentColor"></rect>
+                <rect x="16" y="16" width="3" height="3" fill="currentColor"></rect>
+              </svg>
+            </div>
+            <span class="share-method-name">QR 생성하기</span>
+            <span class="share-method-desc">QR 코드로 공유</span>
+          </button>
+        </div>
+        
+        <!-- 링크 복사 영역 -->
+        <div class="share-result-area" id="linkShareArea" style="display: block;">
+          <label class="share-result-label">공유 링크</label>
+          <div class="share-link-container">
+            <input type="text" class="share-link-input" id="shareLinkInput" value="https://vi-zone.app/share/abc123xyz" readonly>
+            <button class="copy-link-btn" onclick="copyShareLink()">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+              복사
+            </button>
+          </div>
+          <p class="share-help-text">📋 링크를 복사하여 다른 사람과 공유하세요</p>
+        </div>
+        
+        <!-- QR 코드 영역 -->
+        <div class="share-result-area" id="qrShareArea" style="display: none;">
+          <label class="share-result-label">QR 코드</label>
+          <div class="qr-code-container">
+            <div class="qr-code-box" id="qrCodeBox">
+              <!-- QR 코드 이미지가 여기에 표시됩니다 -->
+              <svg width="200" height="200" viewBox="0 0 200 200" fill="none">
+                <rect width="200" height="200" fill="white"/>
+                <!-- QR 패턴 시뮬레이션 -->
+                <g fill="#000000">
+                  <!-- 좌상단 마커 -->
+                  <rect x="10" y="10" width="60" height="60"/>
+                  <rect x="20" y="20" width="40" height="40" fill="white"/>
+                  <rect x="30" y="30" width="20" height="20" fill="#000000"/>
+                  
+                  <!-- 우상단 마커 -->
+                  <rect x="130" y="10" width="60" height="60"/>
+                  <rect x="140" y="20" width="40" height="40" fill="white"/>
+                  <rect x="150" y="30" width="20" height="20" fill="#000000"/>
+                  
+                  <!-- 좌하단 마커 -->
+                  <rect x="10" y="130" width="60" height="60"/>
+                  <rect x="20" y="140" width="40" height="40" fill="white"/>
+                  <rect x="30" y="150" width="20" height="20" fill="#000000"/>
+                  
+                  <!-- 데이터 패턴 (샘플) -->
+                  <rect x="90" y="20" width="10" height="10"/>
+                  <rect x="110" y="20" width="10" height="10"/>
+                  <rect x="90" y="40" width="10" height="10"/>
+                  <rect x="110" y="40" width="10" height="10"/>
+                  <rect x="90" y="60" width="10" height="10"/>
+                  
+                  <rect x="20" y="90" width="10" height="10"/>
+                  <rect x="40" y="90" width="10" height="10"/>
+                  <rect x="60" y="90" width="10" height="10"/>
+                  <rect x="90" y="90" width="10" height="10"/>
+                  <rect x="110" y="90" width="10" height="10"/>
+                  <rect x="130" y="90" width="10" height="10"/>
+                  <rect x="150" y="90" width="10" height="10"/>
+                  <rect x="170" y="90" width="10" height="10"/>
+                  
+                  <rect x="90" y="110" width="10" height="10"/>
+                  <rect x="110" y="110" width="10" height="10"/>
+                  <rect x="130" y="110" width="10" height="10"/>
+                  <rect x="150" y="110" width="10" height="10"/>
+                  <rect x="170" y="110" width="10" height="10"/>
+                  
+                  <rect x="90" y="130" width="10" height="10"/>
+                  <rect x="110" y="130" width="10" height="10"/>
+                  <rect x="130" y="130" width="10" height="10"/>
+                  <rect x="150" y="130" width="10" height="10"/>
+                  <rect x="170" y="130" width="10" height="10"/>
+                  
+                  <rect x="90" y="150" width="10" height="10"/>
+                  <rect x="110" y="150" width="10" height="10"/>
+                  <rect x="150" y="150" width="10" height="10"/>
+                  <rect x="170" y="150" width="10" height="10"/>
+                  
+                  <rect x="90" y="170" width="10" height="10"/>
+                  <rect x="130" y="170" width="10" height="10"/>
+                  <rect x="150" y="170" width="10" height="10"/>
+                </g>
+              </svg>
+            </div>
+          </div>
+          <div class="qr-action-buttons">
+            <button class="qr-action-btn secondary" onclick="copyQRCode()">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+              이미지 복사
+            </button>
+            <button class="qr-action-btn primary" onclick="downloadQRCode()">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="7 10 12 15 17 10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+              </svg>
+              QR 다운로드
+            </button>
+          </div>
+          <p class="share-help-text">📱 QR 코드를 스캔하여 자료에 접근하세요</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 비상 DB 선택 모달 -->
+  <div class="modal-overlay" id="bisangDbModal" style="display: none;" onclick="closeBisangDbModal(event)">
+    <div class="modal-content bisang-db-modal" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <h3 class="modal-title">📚 비상 DB에서 검색하기</h3>
+        <button class="modal-close-btn" onclick="closeBisangDbModal()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      
+      <div class="modal-body">
+        <!-- 필터 섹션 -->
+        <div class="db-filter-section">
+          <div class="filter-row">
+            <label class="filter-label">유형</label>
+            <div class="filter-chips">
+              <button class="filter-chip active" data-filter="type" data-value="교과서">교과서</button>
+              <button class="filter-chip" data-filter="type" data-value="교재">교재</button>
+              <button class="filter-chip" data-filter="type" data-value="내신기출">내신기출</button>
+              <button class="filter-chip" data-filter="type" data-value="모의고사">모의고사</button>
+            </div>
+          </div>
+          
+          <div class="filter-row">
+            <label class="filter-label">과목</label>
+            <div class="filter-chips">
+              <button class="filter-chip" data-filter="subject" data-value="국어">국어</button>
+              <button class="filter-chip" data-filter="subject" data-value="영어">영어</button>
+              <button class="filter-chip active" data-filter="subject" data-value="수학">수학</button>
+              <button class="filter-chip" data-filter="subject" data-value="사회">사회</button>
+              <button class="filter-chip" data-filter="subject" data-value="과학">과학</button>
+            </div>
+          </div>
+          
+          <div class="filter-row">
+            <label class="filter-label">학교급</label>
+            <div class="filter-chips">
+              <button class="filter-chip" data-filter="school-level" data-value="초등학교">초등학교</button>
+              <button class="filter-chip active" data-filter="school-level" data-value="중학교">중학교</button>
+              <button class="filter-chip" data-filter="school-level" data-value="고등학교">고등학교</button>
+            </div>
+          </div>
+          
+          <div class="filter-row">
+            <label class="filter-label">학년/학기</label>
+            <div class="filter-chips" id="gradeSemesterChips">
+              <!-- 중학교 기본값 -->
+              <button class="filter-chip" data-filter="grade-semester" data-value="1-1">1-1</button>
+              <button class="filter-chip" data-filter="grade-semester" data-value="1-2">1-2</button>
+              <button class="filter-chip" data-filter="grade-semester" data-value="2-1">2-1</button>
+              <button class="filter-chip" data-filter="grade-semester" data-value="2-2">2-2</button>
+              <button class="filter-chip" data-filter="grade-semester" data-value="3-1">3-1</button>
+              <button class="filter-chip" data-filter="grade-semester" data-value="3-2">3-2</button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 책 목록 -->
+        <div class="db-book-grid" id="dbBookGrid">
+          <div class="db-book-item" onclick="selectDbBook(this)" data-book-id="1">
+            <div class="db-book-cover">
+              <img src="https://e.vivasam.com/vivasamfiledir/main/aidt/textbook/cover/DM3111%20(1).png" alt="교과서">
+            </div>
+            <div class="db-book-info">
+              <div class="db-book-title">비상교육_교과서_중학교 수학 1 (22개정)</div>
+            </div>
+          </div>
+          
+          <div class="db-book-item" onclick="selectDbBook(this)" data-book-id="2">
+            <div class="db-book-cover">
+              <img src="https://e.vivasam.com/vivasamfiledir/main/aidt/textbook/cover/(22%EA%B0%9C%EC%A0%95)%EC%A4%91%ED%95%99%EC%88%98%ED%95%992_%ED%91%9C11.png" alt="교과서">
+            </div>
+            <div class="db-book-info">
+              <div class="db-book-title">비상교육_교과서_중학교 수학 2 (22개정)</div>
+            </div>
+          </div>
+          
+          <div class="db-book-item" onclick="selectDbBook(this)" data-book-id="3">
+            <div class="db-book-cover">
+              <img src="https://cdn.visang.com/book/202508/20250831120755462.jpg" alt="교재">
+            </div>
+            <div class="db-book-info">
+              <div class="db-book-title">비상교육_교재_개념플러스 유형 파워 중등 수학 1-1 (22개정)</div>
+            </div>
+          </div>
+          
+          <div class="db-book-item" onclick="selectDbBook(this)" data-book-id="4">
+            <div class="db-book-cover">
+              <img src="https://cdn.visang.com/book/202508/20250831120413771.jpg" alt="교재">
+            </div>
+            <div class="db-book-info">
+              <div class="db-book-title">비상교육_교재_개념플러스 유형 라이트 중등 수학 1-1 (22개정)</div>
+            </div>
+          </div>
+          
+          <div class="db-book-item" onclick="selectDbBook(this)" data-book-id="5">
+            <div class="db-book-cover">
+              <img src="https://cdn.visang.com/book/202501/20250122171425797.jpg" alt="교재">
+            </div>
+            <div class="db-book-info">
+              <div class="db-book-title">비상교육_교재_완자 기출PICK 중학 수학 1-1 (22개정)</div>
+            </div>
+          </div>
+          
+          <div class="db-book-item" onclick="selectDbBook(this)" data-book-id="6">
+            <div class="db-book-cover">
+              <img src="https://cdn.visang.com/book/202505/20250513164853770.jpg" alt="교재">
+            </div>
+            <div class="db-book-info">
+              <div class="db-book-title">비상교육_교재_완자 기출PICK 중학 수학 1-2 (22개정)</div>
+            </div>
+          </div>
+          
+          <div class="db-book-item" onclick="selectDbBook(this)" data-book-id="7">
+            <div class="db-book-cover">
+              <img src="https://cdn.visang.com/book/202407/20240703091426341.jpg" alt="교재">
+            </div>
+            <div class="db-book-info">
+              <div class="db-book-title">비상교육_교재_유형만렙 중학 수학 1-1 (22개정)</div>
+            </div>
+          </div>
+          
+          <div class="db-book-item" onclick="selectDbBook(this)" data-book-id="8">
+            <div class="db-book-cover">
+              <img src="https://cdn.visang.com/book/202411/20241106150454153.jpg" alt="교재">
+            </div>
+            <div class="db-book-info">
+              <div class="db-book-title">비상교육_교재_유형만렙 중학 수학 1-2 (22개정)</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="modal-footer">
+        <button class="modal-btn modal-btn-secondary" onclick="closeBisangDbModal()">취소</button>
+        <button class="modal-btn modal-btn-primary" onclick="confirmDbSelection()">선택 완료</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 자료함 모달 -->
+  <div class="modal-overlay" id="myResourcesModal" style="display: none;" onclick="closeMyResourcesModal(event)">
+    <div class="modal-content my-resources-modal" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <h3 class="modal-title">📂 만든 자료에서 불러오기</h3>
+        <button class="modal-close-btn" onclick="closeMyResourcesModal()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      
+      <div class="resources-header-controls">
+        <div class="resources-left-controls">
+          <select class="sort-dropdown" id="resourceSortDropdown">
+            <option value="name">이름순</option>
+            <option value="date">최신순</option>
+            <option value="type">유형별</option>
+          </select>
+          <label class="favorite-toggle">
+            <input type="checkbox" id="favoriteOnlyToggle">
+            <span>즐겨찾기만 보기</span>
+          </label>
+        </div>
+      </div>
+      
+      <div class="modal-body">
+        <div class="resources-modal-grid" id="resourcesModalGrid">
+          <!-- 폴더 -->
+          <div class="resource-modal-item" onclick="selectResource(this)" data-type="folder" data-favorite="false">
+            <button class="favorite-star" onclick="toggleFavorite(event, this)">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+              </svg>
+            </button>
+            <div class="resource-modal-icon">📁</div>
+            <div class="resource-modal-name">2단원_수업자료</div>
+          </div>
+          
+          <div class="resource-modal-item" onclick="selectResource(this)" data-type="folder" data-favorite="false">
+            <button class="favorite-star" onclick="toggleFavorite(event, this)">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+              </svg>
+            </button>
+            <div class="resource-modal-icon">📁</div>
+            <div class="resource-modal-name">3단원_수업자료</div>
+          </div>
+          
+          <div class="resource-modal-item" onclick="selectResource(this)" data-type="folder" data-favorite="false">
+            <button class="favorite-star" onclick="toggleFavorite(event, this)">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+              </svg>
+            </button>
+            <div class="resource-modal-icon">📁</div>
+            <div class="resource-modal-name">4단원_수업자료</div>
+          </div>
+          
+          <div class="resource-modal-item" onclick="selectResource(this)" data-type="folder" data-favorite="false">
+            <button class="favorite-star" onclick="toggleFavorite(event, this)">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+              </svg>
+            </button>
+            <div class="resource-modal-icon">📁</div>
+            <div class="resource-modal-name">6단원_문항</div>
+          </div>
+          
+          <!-- 파일들 -->
+          <div class="resource-modal-item" onclick="selectResource(this)" data-type="ppt" data-favorite="false">
+            <button class="favorite-star" onclick="toggleFavorite(event, this)">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+              </svg>
+            </button>
+            <div class="resource-modal-icon">
+              <img src="https://www.genspark.ai/api/files/s/50jcx26m" alt="PPT">
+            </div>
+            <div class="resource-modal-name">도형의 닮음</div>
+          </div>
+          
+          <div class="resource-modal-item" onclick="selectResource(this)" data-type="ppt" data-favorite="false">
+            <button class="favorite-star" onclick="toggleFavorite(event, this)">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+              </svg>
+            </button>
+            <div class="resource-modal-icon">
+              <img src="https://www.genspark.ai/api/files/s/50jcx26m" alt="PPT">
+            </div>
+            <div class="resource-modal-name">피타고라스 정리</div>
+          </div>
+          
+          <div class="resource-modal-item" onclick="selectResource(this)" data-type="image" data-favorite="false">
+            <button class="favorite-star" onclick="toggleFavorite(event, this)">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+              </svg>
+            </button>
+            <div class="resource-modal-icon">
+              <img src="https://www.genspark.ai/api/files/s/xjxsQu9q" alt="이미지">
+            </div>
+            <div class="resource-modal-name">3단원_함수_01</div>
+          </div>
+          
+          <div class="resource-modal-item" onclick="selectResource(this)" data-type="chart" data-favorite="false">
+            <button class="favorite-star" onclick="toggleFavorite(event, this)">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+              </svg>
+            </button>
+            <div class="resource-modal-icon">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#e74c3c" stroke-width="2">
+                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+              </svg>
+            </div>
+            <div class="resource-modal-name">3단원_함수_02</div>
+          </div>
+          
+          <div class="resource-modal-item" onclick="selectResource(this)" data-type="excel" data-favorite="false">
+            <button class="favorite-star" onclick="toggleFavorite(event, this)">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+              </svg>
+            </button>
+            <div class="resource-modal-icon">
+              <img src="https://www.genspark.ai/api/files/s/P52hHK1D" alt="Excel">
+            </div>
+            <div class="resource-modal-name">출가와 원그림</div>
+          </div>
+          
+          <div class="resource-modal-item" onclick="selectResource(this)" data-type="hwp" data-favorite="false">
+            <button class="favorite-star" onclick="toggleFavorite(event, this)">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+              </svg>
+            </button>
+            <div class="resource-modal-icon">
+              <img src="https://www.genspark.ai/api/files/s/1HVp8yvy" alt="HWP">
+            </div>
+            <div class="resource-modal-name">소인수분해_형성평가</div>
+          </div>
+          
+          <div class="resource-modal-item" onclick="selectResource(this)" data-type="hwp" data-favorite="false">
+            <button class="favorite-star" onclick="toggleFavorite(event, this)">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+              </svg>
+            </button>
+            <div class="resource-modal-icon">
+              <img src="https://www.genspark.ai/api/files/s/1HVp8yvy" alt="HWP">
+            </div>
+            <div class="resource-modal-name">순환소수_형성평가</div>
+          </div>
+          
+          <div class="resource-modal-item" onclick="selectResource(this)" data-type="video" data-favorite="false">
+            <button class="favorite-star" onclick="toggleFavorite(event, this)">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+              </svg>
+            </button>
+            <div class="resource-modal-icon">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="#e74c3c" stroke="#c0392b" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polygon points="10 8 16 12 10 16 10 8" fill="white"></polygon>
+              </svg>
+            </div>
+            <div class="resource-modal-name">1단원_도입 영상</div>
+          </div>
+          
+          <div class="resource-modal-item" onclick="selectResource(this)" data-type="pdf" data-favorite="false">
+            <button class="favorite-star" onclick="toggleFavorite(event, this)">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+              </svg>
+            </button>
+            <div class="resource-modal-icon">
+              <img src="https://www.genspark.ai/api/files/s/YcO2iO80" alt="PDF">
+            </div>
+            <div class="resource-modal-name">5단원_개념정리</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="modal-footer">
+        <button class="modal-btn modal-btn-secondary" onclick="closeMyResourcesModal()">취소</button>
+        <button class="modal-btn modal-btn-primary" onclick="confirmResourceSelection()">선택 완료</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 성취기준 선택 모달 -->
+  <div class="modal-overlay" id="achievementModal" style="display: none;" onclick="closeAchievementModal(event)">
+    <div class="modal-content achievement-modal" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <h3 class="modal-title">📋 성취기준 선택하기</h3>
+        <button class="modal-close-btn" onclick="closeAchievementModal()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      
+      <div class="modal-body">
+        <!-- 필터 섹션 -->
+        <div class="achievement-filter-section">
+          <div class="filter-row">
+            <label class="filter-label">과목</label>
+            <div class="filter-chips">
+              <button class="filter-chip active" data-filter="subject" data-value="수학">수학</button>
+              <button class="filter-chip" data-filter="subject" data-value="국어">국어</button>
+              <button class="filter-chip" data-filter="subject" data-value="영어">영어</button>
+              <button class="filter-chip" data-filter="subject" data-value="사회">사회</button>
+              <button class="filter-chip" data-filter="subject" data-value="과학">과학</button>
+            </div>
+          </div>
+          
+          <div class="filter-row">
+            <label class="filter-label">학년</label>
+            <div class="filter-chips">
+              <button class="filter-chip" data-filter="grade" data-value="초등학교">초등학교</button>
+              <button class="filter-chip active" data-filter="grade" data-value="중학교">중학교</button>
+              <button class="filter-chip" data-filter="grade" data-value="고등학교">고등학교</button>
+            </div>
+          </div>
+          
+          <div class="filter-row">
+            <label class="filter-label">단원</label>
+            <div class="filter-chips">
+              <button class="filter-chip" data-filter="unit" data-value="I. 유리수와 순환소수">I. 유리수와 순환소수</button>
+              <button class="filter-chip" data-filter="unit" data-value="II. 부등식과 연립방정식">II. 부등식과 연립방정식</button>
+              <button class="filter-chip" data-filter="unit" data-value="III. 일차함수">III. 일차함수</button>
+              <button class="filter-chip" data-filter="unit" data-value="IV. 삼각형의 성질">IV. 삼각형의 성질</button>
+              <button class="filter-chip" data-filter="unit" data-value="V. 도형의 닮음과 피타고라스 정리">V. 도형의 닮음과 피타고라스 정리</button>
+              <button class="filter-chip" data-filter="unit" data-value="VI. 확률">VI. 확률</button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 성취기준 목록 -->
+        <div class="achievement-list-section">
+          <div class="achievement-list-header">
+            <h4 class="achievement-list-title">성취기준 항목</h4>
+          </div>
+          
+          <div class="achievement-list" id="achievementList">
+            <div class="achievement-item" onclick="selectAchievementItem(this)" data-code="9수01-06">
+              <span class="achievement-item-code">[9수01-06]</span>
+              <span class="achievement-item-text">순환소수의 뜻을 알고, 유리수와 순환소수의 관계를 설명할 수 있다.</span>
+            </div>
+            
+            <div class="achievement-item" onclick="selectAchievementItem(this)" data-code="9수02-08">
+              <span class="achievement-item-code">[9수02-08]</span>
+              <span class="achievement-item-text">지수법칙을 이해하고, 이를 이용하여 식을 간단히 할 수 있다.</span>
+            </div>
+            
+            <div class="achievement-item" onclick="selectAchievementItem(this)" data-code="9수02-09">
+              <span class="achievement-item-code">[9수02-09]</span>
+              <span class="achievement-item-text">다항식의 덧셈과 뺄셈의 원리를 이해하고, 그 계산을 할 수 있다.</span>
+            </div>
+            
+            <div class="achievement-item" onclick="selectAchievementItem(this)" data-code="9수02-10">
+              <span class="achievement-item-code">[9수02-10]</span>
+              <span class="achievement-item-text">(다항식)×(다항식), (다항식)÷(다항식)과 같은 곱셈과 나눗셈의 원리를 이해하고, 그 계산을 할 수 있다.</span>
+            </div>
+            
+            <div class="achievement-item" onclick="selectAchievementItem(this)" data-code="9수02-11">
+              <span class="achievement-item-code">[9수02-11]</span>
+              <span class="achievement-item-text">부등식과 그 해의 뜻을 알고, 부등식의 성질을 설명할 수 있다.</span>
+            </div>
+            
+            <div class="achievement-item" onclick="selectAchievementItem(this)" data-code="9수02-12">
+              <span class="achievement-item-code">[9수02-12]</span>
+              <span class="achievement-item-text">일원일차부등식을 풀 수 있고, 이를 활용하여 문제를 해결할 수 있다.</span>
+            </div>
+            
+            <div class="achievement-item" onclick="selectAchievementItem(this)" data-code="9수03-01">
+              <span class="achievement-item-code">[9수03-01]</span>
+              <span class="achievement-item-text">순서쌍과 좌표를 이해하고, 순서쌍을 좌표평면에 나타낼 수 있다.</span>
+            </div>
+            
+            <div class="achievement-item" onclick="selectAchievementItem(this)" data-code="9수03-02">
+              <span class="achievement-item-code">[9수03-02]</span>
+              <span class="achievement-item-text">다양한 상황을 그래프로 나타내고, 해석할 수 있다.</span>
+            </div>
+            
+            <div class="achievement-item" onclick="selectAchievementItem(this)" data-code="9수03-03">
+              <span class="achievement-item-code">[9수03-03]</span>
+              <span class="achievement-item-text">정비례와 반비례의 의미를 이해하고, 그 관계를 표, 식, 그래프로 나타낼 수 있다.</span>
+            </div>
+            
+            <div class="achievement-item" onclick="selectAchievementItem(this)" data-code="9수03-04">
+              <span class="achievement-item-code">[9수03-04]</span>
+              <span class="achievement-item-text">일차함수의 의미를 이해하고, 그 그래프를 그릴 수 있다.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="modal-footer">
+        <button class="modal-btn modal-btn-secondary" onclick="closeAchievementModal()">취소</button>
+        <button class="modal-btn modal-btn-primary" onclick="confirmAchievementSelection()">선택 완료</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/script.js"></script>
+  <script src="js/question.js?v=2.13"></script>
+</body>
+</html>

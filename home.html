@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VI-ZONE - 수학 교사 플랫폼</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app-container">
+    <!-- 사이드바 -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
+      </div>
+      
+      <nav class="sidebar-menu">
+        <a href="home.html" class="menu-item active">
+          <span class="menu-item-icon">🏠</span>
+          <span class="menu-item-text">홈</span>
+        </a>
+        <a href="lesson.html" class="menu-item">
+          <span class="menu-item-icon">📚</span>
+          <span class="menu-item-text">수업 자료 생성</span>
+        </a>
+        <a href="question.html" class="menu-item">
+          <span class="menu-item-icon">✏️</span>
+          <span class="menu-item-text">문항 생성/변형</span>
+        </a>
+        <a href="tool.html" class="menu-item">
+          <span class="menu-item-icon">
+            <img src="https://www.genspark.ai/api/files/s/gjx2ILJc" alt="도구 제작" style="width: 24px; height: 24px;">
+          </span>
+          <span class="menu-item-text">도구 제작</span>
+        </a>
+      </nav>
+      
+      <div class="sidebar-footer">
+        <div class="teacher-profile">
+          <div class="teacher-avatar">
+            <img src="https://www.genspark.ai/api/files/s/wfAbSpUF" alt="김지은 선생님">
+          </div>
+          <div class="teacher-info">
+            <div class="teacher-name">김지은 선생님</div>
+            <div class="teacher-role">수학 교사</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- 메인 컨텐츠 -->
+    <main class="main-content">
+      <!-- 로고 섹션 -->
+      <section class="logo-section">
+        <img src="https://www.genspark.ai/api/files/s/bs9a2YFL" alt="VI-ZONE Logo" class="logo-image">
+      </section>
+
+      <!-- 꿀벌 말풍선 -->
+      <section class="welcome-bubble">
+        <div class="bubble-container">
+          <div class="bee-character">
+            <img src="https://www.genspark.ai/api/files/s/1QGedZsz" alt="꿀벌 캐릭터">
+          </div>
+          <div class="speech-bubble">
+            <p>안녕하세요, 김지은 선생님! 오늘 어떤 자료를 만들어 볼까요? 수업 자료, 문항, 수업 도구를 자유롭게 만들어 보세요.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 메인 기능 버튼 -->
+      <section class="main-features">
+        <a href="lesson.html" class="feature-card">
+          <div class="feature-icon">📚</div>
+          <h2 class="feature-title">수업 자료 생성</h2>
+          <p class="feature-description">수업 자료를 생성할 수 있습니다.</p>
+        </a>
+
+        <a href="question.html" class="feature-card">
+          <div class="feature-icon">✏️</div>
+          <h2 class="feature-title">문항 생성/변환</h2>
+          <p class="feature-description">문항을 생성하거나 변환할 수 있습니다.</p>
+        </a>
+
+        <a href="tool.html" class="feature-card">
+          <div class="feature-icon">
+            <img src="https://www.genspark.ai/api/files/s/gjx2ILJc" alt="도구 제작 아이콘">
+          </div>
+          <h2 class="feature-title">도구 제작</h2>
+          <p class="feature-description">수업을 위한 도구를 제작할 수 있습니다.</p>
+        </a>
+      </section>
+
+      <!-- 내가 만든 자료 -->
+      <section class="my-resources">
+        <div class="resources-header">
+          <h2 class="resources-title">내가 만든 자료</h2>
+          <div class="resources-actions">
+            <div class="sort-dropdown">
+              <button class="sort-button" onclick="toggleSortDropdown()">
+                최신순 <span style="font-size: 12px;">▼</span>
+              </button>
+              <div class="dropdown-menu">
+                <div class="dropdown-item" onclick="sortResources('name')">이름순</div>
+                <div class="dropdown-item" onclick="sortResources('latest')">최신순</div>
+                <div class="dropdown-item" onclick="sortResources('type')">유형별</div>
+              </div>
+            </div>
+            <button class="action-btn favorite-filter-btn" onclick="toggleFavoriteFilter()">
+              <span>⭐</span> <span id="favoriteFilterText">즐겨찾기만 보기</span>
+            </button>
+            <button class="action-btn" onclick="addNewFolder()">
+              <span>+</span> 새 폴더
+            </button>
+            <button class="action-btn" onclick="toggleManageMode()">
+              <span>✏️</span> 관리하기
+            </button>
+            <button class="action-btn ai-btn" onclick="showAIOrganizeModal()">
+              <span>🤖</span> AI로 정리하기
+            </button>
+          </div>
+        </div>
+
+        <!-- 일괄 작업 버튼 영역 (관리 모드에서만 표시) -->
+        <div class="bulk-actions" id="bulkActions" style="display: none;">
+          <button class="bulk-action-btn" onclick="bulkAddFavorite()">
+            <span>⭐</span> 즐겨찾기 추가
+          </button>
+          <button class="bulk-action-btn" onclick="bulkRemoveFavorite()">
+            <span>☆</span> 즐겨찾기 해제
+          </button>
+          <button class="bulk-action-btn delete-bulk-btn" onclick="bulkDelete()">
+            <span>🗑️</span> 선택 항목 삭제
+          </button>
+        </div>
+
+        <div class="resources-grid" id="resourcesGrid">
+          <!-- 폴더 -->
+          <div class="resource-item folder-item" data-folder="2단원_수업자료" onclick="openFolderModal('2단원_수업자료')">
+            <span class="favorite-star" onclick="event.stopPropagation(); toggleFavorite(this)" data-favorite="false">
+              ☆
+              <span class="tooltip">즐겨찾기에 추가</span>
+            </span>
+            <div class="resource-icon folder-icon">📁</div>
+            <div class="resource-name">2단원_수업자료</div>
+          </div>
+
+          <div class="resource-item folder-item" data-folder="3단원_수업자료" onclick="openFolderModal('3단원_수업자료')">
+            <span class="favorite-star" onclick="event.stopPropagation(); toggleFavorite(this)" data-favorite="false">
+              ☆
+              <span class="tooltip">즐겨찾기에 추가</span>
+            </span>
+            <div class="resource-icon folder-icon">📁</div>
+            <div class="resource-name">3단원_수업자료</div>
+          </div>
+
+          <div class="resource-item folder-item" data-folder="4단원_수업자료" onclick="openFolderModal('4단원_수업자료')">
+            <span class="favorite-star" onclick="event.stopPropagation(); toggleFavorite(this)" data-favorite="false">
+              ☆
+              <span class="tooltip">즐겨찾기에 추가</span>
+            </span>
+            <div class="resource-icon folder-icon">📁</div>
+            <div class="resource-name">4단원_수업자료</div>
+          </div>
+
+          <div class="resource-item folder-item" data-folder="6단원_문항" onclick="openFolderModal('6단원_문항')">
+            <span class="favorite-star" onclick="event.stopPropagation(); toggleFavorite(this)" data-favorite="false">
+              ☆
+              <span class="tooltip">즐겨찾기에 추가</span>
+            </span>
+            <div class="resource-icon folder-icon">📁</div>
+            <div class="resource-name">6단원_문항</div>
+          </div>
+
+          <!-- PPT 파일 -->
+          <div class="resource-item">
+            <span class="favorite-star" onclick="toggleFavorite(this)" data-favorite="false">
+              ☆
+              <span class="tooltip">즐겨찾기에 추가</span>
+            </span>
+            <div class="resource-icon ppt-icon">
+              <img src="https://www.genspark.ai/api/files/s/50jcx26m" alt="PPT">
+            </div>
+            <div class="resource-name">도형의 닮음</div>
+          </div>
+
+          <div class="resource-item">
+            <span class="favorite-star" onclick="toggleFavorite(this)" data-favorite="false">
+              ☆
+              <span class="tooltip">즐겨찾기에 추가</span>
+            </span>
+            <div class="resource-icon ppt-icon">
+              <img src="https://www.genspark.ai/api/files/s/50jcx26m" alt="PPT">
+            </div>
+            <div class="resource-name">피타고라스 정리</div>
+          </div>
+
+          <!-- 이미지 -->
+          <div class="resource-item">
+            <span class="favorite-star" onclick="toggleFavorite(this)" data-favorite="false">
+              ☆
+              <span class="tooltip">즐겨찾기에 추가</span>
+            </span>
+            <div class="resource-icon image-icon">
+              <img src="https://www.genspark.ai/api/files/s/AP1n8OCE" alt="이미지">
+            </div>
+            <div class="resource-name">3단원_함수_01</div>
+          </div>
+
+          <div class="resource-item">
+            <span class="favorite-star" onclick="toggleFavorite(this)" data-favorite="false">
+              ☆
+              <span class="tooltip">즐겨찾기에 추가</span>
+            </span>
+            <div class="resource-icon image-icon">
+              <img src="https://www.genspark.ai/api/files/s/pnvBbFXA" alt="이미지">
+            </div>
+            <div class="resource-name">3단원_함수_02</div>
+          </div>
+
+          <!-- 엑셀 파일 -->
+          <div class="resource-item">
+            <span class="favorite-star" onclick="toggleFavorite(this)" data-favorite="false">
+              ☆
+              <span class="tooltip">즐겨찾기에 추가</span>
+            </span>
+            <div class="resource-icon excel-icon">
+              <img src="https://www.genspark.ai/api/files/s/HCi9Xg0i" alt="엑셀">
+            </div>
+            <div class="resource-name">줄기와 잎그림</div>
+          </div>
+
+          <!-- 한글 파일 -->
+          <div class="resource-item">
+            <span class="favorite-star" onclick="toggleFavorite(this)" data-favorite="false">
+              ☆
+              <span class="tooltip">즐겨찾기에 추가</span>
+            </span>
+            <div class="resource-icon hwp-icon">
+              <img src="https://www.genspark.ai/api/files/s/674ELGGT" alt="한글">
+            </div>
+            <div class="resource-name">소인수분해_형성평가</div>
+          </div>
+
+          <div class="resource-item">
+            <span class="favorite-star" onclick="toggleFavorite(this)" data-favorite="false">
+              ☆
+              <span class="tooltip">즐겨찾기에 추가</span>
+            </span>
+            <div class="resource-icon hwp-icon">
+              <img src="https://www.genspark.ai/api/files/s/674ELGGT" alt="한글">
+            </div>
+            <div class="resource-name">순환소수_형성평가</div>
+          </div>
+
+          <!-- 동영상 파일 -->
+          <div class="resource-item">
+            <span class="favorite-star" onclick="toggleFavorite(this)" data-favorite="false">
+              ☆
+              <span class="tooltip">즐겨찾기에 추가</span>
+            </span>
+            <div class="resource-icon video-icon">
+              <img src="https://www.genspark.ai/api/files/s/R1wjWPKM" alt="동영상">
+            </div>
+            <div class="resource-name">1단원_도입 영상</div>
+          </div>
+
+          <!-- PDF 파일 -->
+          <div class="resource-item">
+            <span class="favorite-star" onclick="toggleFavorite(this)" data-favorite="false">
+              ☆
+              <span class="tooltip">즐겨찾기에 추가</span>
+            </span>
+            <div class="resource-icon pdf-icon">
+              <img src="https://www.genspark.ai/api/files/s/MMaHyqVI" alt="PDF">
+            </div>
+            <div class="resource-name">5단원_개념정리</div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- 폴더 팝업 모달 -->
+  <div id="folderModal" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="modalTitle" class="modal-title"></h2>
+        <div class="modal-header-actions">
+          <button class="modal-action-btn" onclick="addSubfolder()">
+            <span>+</span> 새 폴더
+          </button>
+          <button class="modal-action-btn" onclick="uploadFile()">
+            <span>+</span> 파일 업로드
+          </button>
+          <button class="modal-action-btn" onclick="toggleModalManageMode()">
+            <span>✏️</span> 관리하기
+          </button>
+          <button class="modal-close" onclick="closeFolderModal()">✕</button>
+        </div>
+      </div>
+      <div class="modal-body">
+        <div id="folderContent" class="folder-content"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AI 정리 모달 -->
+  <div id="aiOrganizeModal" class="modal-overlay">
+    <div class="modal-content ai-modal">
+      <div class="modal-header">
+        <h2 class="modal-title">🤖 AI로 자동 정리하기</h2>
+        <button class="modal-close" onclick="closeAIOrganizeModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="ai-modal-content">
+          <p class="ai-description">업로드한 파일들을 AI가 자동으로 분석하여 단원별, 개념별, 활동/평가 유형별로 정리해드립니다.</p>
+          <div class="ai-features">
+            <div class="ai-feature-item">
+              <span class="ai-feature-icon">📂</span>
+              <span class="ai-feature-text">단원별 자동 분류</span>
+            </div>
+            <div class="ai-feature-item">
+              <span class="ai-feature-icon">🎯</span>
+              <span class="ai-feature-text">개념별 정리</span>
+            </div>
+            <div class="ai-feature-item">
+              <span class="ai-feature-icon">📝</span>
+              <span class="ai-feature-text">활동/평가 유형 분석</span>
+            </div>
+          </div>
+          
+          <!-- 즐겨찾기 추천 섹션 -->
+          <div class="ai-favorite-section">
+            <h3 class="ai-favorite-title">⭐ AI가 자주 사용한 자료를 즐겨찾기로 추천합니다</h3>
+            <div class="ai-favorite-list" id="aiFavoriteList">
+              <!-- AI 추천 항목 -->
+            </div>
+          </div>
+          
+          <p class="ai-warning">⚠️ 기존 폴더 구조가 변경될 수 있습니다.</p>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="modal-btn cancel-btn" onclick="closeAIOrganizeModal()">취소</button>
+        <button class="modal-btn" onclick="applyAIFavorites()" style="background: linear-gradient(135deg, #FFD43B 0%, #FFA726 100%); color: var(--white);">즐겨찾기 추가</button>
+        <button class="modal-btn confirm-btn" onclick="executeAIOrganize()">자동 정리 실행</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 새 폴더 입력 모달 -->
+  <div id="inputModal" class="modal-overlay">
+    <div class="modal-content input-modal">
+      <div class="modal-header">
+        <h2 class="modal-title">📁 새 폴더 만들기</h2>
+        <button class="modal-close" onclick="closeInputModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <label for="folderNameInput" class="input-label">폴더 이름을 입력하세요</label>
+        <input type="text" id="folderNameInput" class="modal-input" placeholder="예: 7단원_수업자료">
+      </div>
+      <div class="modal-footer">
+        <button class="modal-btn cancel-btn" onclick="closeInputModal()">취소</button>
+        <button class="modal-btn confirm-btn" onclick="confirmFolderName()">확인</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 삭제 확인 모달 -->
+  <div id="confirmModal" class="modal-overlay">
+    <div class="modal-content confirm-modal">
+      <div class="modal-header">
+        <h2 class="modal-title">🗑️ 삭제 확인</h2>
+        <button class="modal-close" onclick="closeConfirmModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <p id="confirmMessage" class="confirm-message"></p>
+      </div>
+      <div class="modal-footer">
+        <button class="modal-btn cancel-btn" onclick="closeConfirmModal()">취소</button>
+        <button class="modal-btn delete-btn" onclick="confirmDelete()">삭제</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 새 폴더 입력 모달 -->
+  <div id="newFolderModal" class="modal-overlay">
+    <div class="modal-content custom-modal">
+      <div class="modal-header">
+        <h2 class="modal-title">📁 새 폴더 만들기</h2>
+        <button class="modal-close" onclick="closeNewFolderModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="input-group">
+          <label for="folderNameInput" class="input-label">폴더 이름</label>
+          <input type="text" id="folderNameInput" class="custom-input" placeholder="폴더 이름을 입력하세요">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="modal-btn cancel-btn" onclick="closeNewFolderModal()">취소</button>
+        <button class="modal-btn confirm-btn" onclick="confirmNewFolder()">생성</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 삭제 확인 모달 -->
+  <div id="deleteConfirmModal" class="modal-overlay">
+    <div class="modal-content custom-modal">
+      <div class="modal-header">
+        <h2 class="modal-title">🗑️ 삭제 확인</h2>
+        <button class="modal-close" onclick="closeDeleteConfirmModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="confirm-content">
+          <div class="confirm-icon">⚠️</div>
+          <p id="deleteMessage" class="confirm-message"></p>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="modal-btn cancel-btn" onclick="closeDeleteConfirmModal()">취소</button>
+        <button class="modal-btn delete-confirm-btn" onclick="confirmDelete()">삭제</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/script.js"></script>
+</body>
+</html>
